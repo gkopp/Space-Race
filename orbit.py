@@ -1,10 +1,55 @@
 #!/usr/bin/env python
-
+from __future__ import division, print_function
 from visual import *
 from visual.controls import *
+import wx
 
-solar_system = display(title='Solar System',width=700, height=700,
+
+################## FUNCTIONS THAT ARE CALLED ON EVENTS ###############
+
+def togglecubecolor(evt): 
+    choice = t1.GetSelection()
+    #if choice == 0: # upper radio button (choice = 0)
+    #    print "yp" #cube.color = color.red
+    #else: # lower radio button (choice = 1)
+    #    break  #cube.color = color.cyan
+
+################ CREATE MAIN WINDOW AND DISPLAY WIDGET ################
+
+w = window(title='Solar System',width=1200, height=720,
     x=0, y=0)
+
+solar_system = display(window=w, x=20, y=20, width=650, height=650,
+    forward=-vector(0,-3,1))
+
+######################## ADD USER EVENT OBJECTS #######################
+
+event_panel = w.panel
+
+# toggle button for two viewing mode
+t1 = wx.RadioBox(event_panel, pos=(800,100), size=(160, 60),
+    choices = ['Interactive mode', 'Simulation mode'], style=wx.RA_SPECIFY_ROWS)
+t1.Bind(wx.EVT_RADIOBOX, togglecubecolor)
+
+# menu for year
+years = []
+for year in range(1900, 2500):
+    years.append(str(year))
+year_menu = wx.Choice(event_panel, choices=years, pos=(800,160))
+
+# menu for month
+months = []
+for month in range(1,13):
+    months.append(str(month))
+month_menu = wx.Choice(event_panel, choices=months, pos=(800,260))
+
+# menu for day
+days = []
+for day in range(1,32):
+    days.append(str(day))
+day_menu = wx.Choice(event_panel, choices=days, pos=(800,360))
+
+######################## IMPLEMENT 3D ANIMATION #########################
 
 # Define Sun/Planet attributes
 sun = sphere(pos=(0,0,0), radius=3, color=color.yellow)
@@ -32,6 +77,13 @@ mars.pos = (sun.radius+mars.radius+2.5,sun.radius+mars.radius+2.5,0)
 
 mercury = sphere(radius=.2, color=(.750,.750,.750))
 mercury.pos = (sun.radius+mercury.radius+0.3,sun.radius+mercury.radius+0.3,0)
+
+#control_panel = controls(x=0, y=0, width=700, height=700)
+#year = menu(pos=(-70,70,0), height=7, width=25, text='Year')
+
+# After creating the menu heading, add menu items:
+#for num in range(1900, 2500):
+#    year.items.append((str(num), None))
 
 # create lists of planets and corresponding relative speeds
 speeds = [1,.39, .24,.13,.02,.008,.003,.001]
