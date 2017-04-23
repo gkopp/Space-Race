@@ -14,13 +14,17 @@ def togglecubecolor(evt):
     #else: # lower radio button (choice = 1)
     #    break  #cube.color = color.cyan
 
+def setrate(evt):
+    y_value = view_angle.GetValue()
+    solar_system.forward =-vector(0, y_value ,1)
+
 ################ CREATE MAIN WINDOW AND DISPLAY WIDGET ################
 
 w = window(title='Solar System',width=1200, height=720,
     x=0, y=0)
 
 solar_system = display(window=w, x=20, y=20, width=650, height=650,
-    forward=-vector(0,-3,1))
+    forward=-vector(0,0,1))
 
 ######################## ADD USER EVENT OBJECTS #######################
 
@@ -36,19 +40,27 @@ years = []
 for year in range(1900, 2500):
     years.append(str(year))
 year_menu = wx.Choice(event_panel, choices=years, pos=(800,160))
+year_menu.Bind(wx.EVT_CHOICE, choose)
 
 # menu for month
 months = []
 for month in range(1,13):
     months.append(str(month))
 month_menu = wx.Choice(event_panel, choices=months, pos=(800,260))
+month_menu.Bind(wx.EVT_CHOICE, choose)
 
 # menu for day
 days = []
 for day in range(1,32):
     days.append(str(day))
 day_menu = wx.Choice(event_panel, choices=days, pos=(800,360))
+day_menu.Bind(wx.EVT_CHOICE, choose)
 
+# slider for view angle
+view_angle = wx.Slider(event_panel, pos=(800,460), size=(100,20), minValue=-10, maxValue=0)
+view_angle.Bind(wx.EVT_SCROLL, setrate)
+
+# slider for zoom
 ######################## IMPLEMENT 3D ANIMATION #########################
 
 # Define Sun/Planet attributes
