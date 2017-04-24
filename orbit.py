@@ -98,6 +98,8 @@ day_menu.Bind(wx.EVT_CHOICE, choose)
 advance =  wx.Button(event_panel, label='Advance', pos=(800,190))
 advance.Bind(wx.EVT_BUTTON, advance_simulation)
 
+
+
 # angle update title
 wx.StaticText(event_panel, pos=(700,240), size=(300,30),
     label='Update rotational viewing angle:',
@@ -164,12 +166,30 @@ dt = 0.01
 # perform animation
 
 iterations = 0
+advance = True
 
-while True:
-    rate(100)         # max of 100 frames/second
-    theta = dt*2*pi
-    iterations = iterations + 1
-    for planet, speed in planets:
-        planet.pos = rotate(planet.pos, speed*theta)
-        if iterations*speed*theta < 25:
-            planet.trail.append(pos=planet.pos)
+while(1):
+    # create lists of planets and corresponding relative speeds
+    speeds = [1,.39, .24,.13,.02,.008,.003,.001]
+    planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
+    if advance == True:
+        # initialize trail for each planet
+        for planet in planets:
+            planet.trail = curve(color = color.white)
+
+        planets = zip(planets, speeds) # aggregate planet names and speeds
+
+        dt = 0.01
+
+        while advance == true:
+            rate(100)         # max of 100 frames/second
+            theta = dt*2*pi
+            iterations = iterations + 1
+            for planet, speed in planets:
+                planet.pos = rotate(planet.pos, speed*theta)
+                if iterations*speed*theta < 25:
+                    planet.trail.append(pos=planet.pos)
+    else:
+        while advance != true:
+            for planet in planets:
+                planet.trail = curve(color = color.black)
