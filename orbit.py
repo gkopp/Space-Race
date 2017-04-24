@@ -8,6 +8,8 @@ import math
 
 ######################### GLOBAL VARIABLES ###########################
 
+advance = True
+
 ################## FUNCTIONS THAT ARE CALLED ON EVENTS ###############
 
 def togglecubecolor(evt): 
@@ -42,7 +44,14 @@ def advance_simulation(evt):
         new_theta = rot_num*2*pi
         planet.pos = (cos(new_theta)*(sun.radius+planet.radius+size), 
             sin(new_theta)*(sun.radius+planet.radius+size), 0)
-        wait(10)
+        planet.trail.visible = False
+    mars.speed = 0
+
+def run_simulation(evt):
+    mars.speed = 0.01 
+
+def stop_simulation(evt):
+    mars.speed = 0
 
 #def update_speed(evt):
 #    adjust_speed = speed_slider.GetValue()
@@ -76,7 +85,6 @@ years.append("Year")
 for year in range(1900, 2500):
     years.append(str(year))
 year_menu = wx.Choice(event_panel, choices=years, pos=(700,160))
-year_menu.Bind(wx.EVT_CHOICE, choose)
 
 # menu for month
 months = []
@@ -84,7 +92,6 @@ months.append("Month")
 for month in range(1,13):
     months.append(str(month))
 month_menu = wx.Choice(event_panel, choices=months, pos=(800,160))
-month_menu.Bind(wx.EVT_CHOICE, advance_simulation)
 
 # menu for day
 days = []
@@ -98,7 +105,11 @@ day_menu.Bind(wx.EVT_CHOICE, choose)
 advance =  wx.Button(event_panel, label='Advance', pos=(800,190))
 advance.Bind(wx.EVT_BUTTON, advance_simulation)
 
+run_button = wx.Button(event_panel, label='Run', pos=(725,50))
+run_button.Bind(wx.EVT_BUTTON, run_simulation)
 
+stop_button = wx.Button(event_panel, label='Stop', pos=(860,50))
+stop_button.Bind(wx.EVT_BUTTON, stop_simulation)
 
 # angle update title
 wx.StaticText(event_panel, pos=(700,240), size=(300,30),
@@ -107,7 +118,7 @@ wx.StaticText(event_panel, pos=(700,240), size=(300,30),
 
 # slider for view angle
 view_angle = wx.Slider(event_panel, pos=(700,260), size=(300,20),
-    minValue=-10, maxValue=0)
+    minValue=-7, maxValue=0)
 view_angle.Bind(wx.EVT_SCROLL, change_view)
 
 # slider for speed adjustment
@@ -144,12 +155,7 @@ mars.pos = (sun.radius+mars.radius+2.5,sun.radius+mars.radius+2.5,0)
 mercury = sphere(radius=.2, color=(.750,.750,.750))
 mercury.pos = (sun.radius+mercury.radius+0.3,sun.radius+mercury.radius+0.3,0)
 
-#control_panel = controls(x=0, y=0, width=700, height=700)
-#year = menu(pos=(-70,70,0), height=7, width=25, text='Year')
 
-# After creating the menu heading, add menu items:
-#for num in range(1900, 2500):
-#    year.items.append((str(num), None))
 
 # create lists of planets and corresponding relative speeds
 speeds = [1,.39, .24,.13,.02,.008,.003,.001]
@@ -158,6 +164,8 @@ planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
 # initialize trail for each planet
 for planet in planets:
     planet.trail = curve(color = color.white)
+    planet.speed = 0.01
+    planet.make_trail=False
 
 planets = zip(planets, speeds) # aggregate planet names and speeds
 
@@ -167,29 +175,14 @@ dt = 0.01
 
 iterations = 0
 advance = True
+dt = 0.01
 
 while(1):
-    # create lists of planets and corresponding relative speeds
-    speeds = [1,.39, .24,.13,.02,.008,.003,.001]
-    planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
-    if advance == True:
-        # initialize trail for each planet
-        for planet in planets:
-            planet.trail = curve(color = color.white)
+    rate(100)         # max of 100 frames/second
+    theta = mars.speed*2*pi
+    iterations = iterations + 1
+    for planet, speed in planets:
+        planet.pos = rotate(planet.pos, speed*theta)
+        if iterations*speed*theta < 25 and mars.speed != 0:
+            planet.trail.append(pos=planet.pos)
 
-        planets = zip(planets, speeds) # aggregate planet names and speeds
-
-        dt = 0.01
-
-        while advance == true:
-            rate(100)         # max of 100 frames/second
-            theta = dt*2*pi
-            iterations = iterations + 1
-            for planet, speed in planets:
-                planet.pos = rotate(planet.pos, speed*theta)
-                if iterations*speed*theta < 25:
-                    planet.trail.append(pos=planet.pos)
-    else:
-        while advance != true:
-            for planet in planets:
-                planet.trail = curve(color = color.black)
