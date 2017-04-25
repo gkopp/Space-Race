@@ -28,10 +28,12 @@ def change_view(evt):
 
 def advance_simulation(evt):
     base_yr = 561.
+    day = day_menu.GetSelection()
+    day = day/365
     month = month_menu.GetSelection() 
     month = month/12
     year = year_menu.GetSelection()
-    year = year + base_yr
+    year = year + base_yr + day
 
     #Lists of planets, corresponding spacing, time for orbit
     posfactor = [.24,1.88, .62,1.,11.86,29.46,84.01,164.8]
@@ -76,6 +78,36 @@ trail_toggle = wx.RadioBox(event_panel, pos=(760,300), size=(160, 60),
     choices = ['Show trail', 'Hide trail'], style=wx.RA_SPECIFY_ROWS)
 trail_toggle.Bind(wx.EVT_RADIOBOX, toggle_trail)
 
+# title for checkboxes
+wx.StaticText(event_panel, pos=(700,445), size=(300,30),
+    label='Planets included in simulation:',
+    style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
+
+# planet check boxes for visibility
+mercury_check = wx.CheckBox(event_panel, pos=(800,450), size=(160, 60),
+    label = 'Mercury')
+#mercury_check.Bind(wx.EVT_CHECKBOX, toggle_trail)
+
+venus_check = wx.CheckBox(event_panel, pos=(800,470), size=(160, 60),
+    label = 'Venus', style=wx.RA_SPECIFY_ROWS)
+
+earth_check = wx.CheckBox(event_panel, pos=(800,490), size=(160, 60),
+    label = 'Earth', style=wx.RA_SPECIFY_ROWS)
+
+mars_check = wx.CheckBox(event_panel, pos=(800,510), size=(160, 60),
+    label = 'Mars', style=wx.RA_SPECIFY_ROWS)
+
+jupiter_check = wx.CheckBox(event_panel, pos=(800,530), size=(160, 60),
+    label = 'Jupiter', style=wx.RA_SPECIFY_ROWS)
+
+saturn_check = wx.CheckBox(event_panel, pos=(800,550), size=(160, 60),
+    label = 'Saturn', style=wx.RA_SPECIFY_ROWS)
+
+uranus_check = wx.CheckBox(event_panel, pos=(800,570), size=(160, 60),
+    label = 'Uranus', style=wx.RA_SPECIFY_ROWS)
+
+neptune_check = wx.CheckBox(event_panel, pos=(800,590), size=(160, 60),
+    label = 'Neptune', style=wx.RA_SPECIFY_ROWS)
 
 # date menus title
 wx.StaticText(event_panel, pos=(690,130), size=(300,30),
@@ -102,7 +134,6 @@ days.append("Day")
 for day in range(1,32):
     days.append(str(day))
 day_menu = wx.Choice(event_panel, choices=days, pos=(910,160))
-day_menu.Bind(wx.EVT_CHOICE, choose)
 
 # advance simulation button
 advance =  wx.Button(event_panel, label='Advance', pos=(800,190))
@@ -194,6 +225,6 @@ while(1):
     iterations = iterations + 1
     for planet, speed in planets:
         planet.pos = rotate(planet.pos, speed*theta)
-        if iterations*speed*theta < 25 and mars.speed != 0:
+        if iterations*speed*theta < 60 and mars.speed != 0:
             planet.trail.append(pos=planet.pos)
 
