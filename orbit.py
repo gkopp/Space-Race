@@ -33,7 +33,7 @@ def advance_simulation(evt):
     month = month_menu.GetSelection() 
     month = month/12
     year = year_menu.GetSelection()
-    year = year + base_yr + day
+    year = year + base_yr + month + day
 
     #Lists of planets, corresponding spacing, time for orbit
     posfactor = [.24,1.88, .62,1.,11.86,29.46,84.01,164.8]
