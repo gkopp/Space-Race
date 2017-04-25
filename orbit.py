@@ -12,12 +12,15 @@ advance = True
 
 ################## FUNCTIONS THAT ARE CALLED ON EVENTS ###############
 
-def togglecubecolor(evt): 
-    choice = t1.GetSelection()
-    #if choice == 0: # upper radio button (choice = 0)
-    #    print "yp" #cube.color = color.red
-    #else: # lower radio button (choice = 1)
-    #    break  #cube.color = color.cyan
+def toggle_trail(evt): 
+    choice = trail_toggle.GetSelection()
+    planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
+    if choice == 0: # top radio button
+        for planet in planets:
+            planet.trail.visible = True
+    else: # bottom radio button
+        for planet in planets:
+            planet.trail.visible = False
 
 def change_view(evt):
     y_value = view_angle.GetValue()
@@ -69,9 +72,9 @@ solar_system = display(window=w, x=20, y=20, width=650, height=650,
 event_panel = w.panel
 
 # toggle button for two viewing mode
-#t1 = wx.RadioBox(event_panel, pos=(800,100), size=(160, 60),
-#    choices = ['Interactive mode', 'Simulation mode'], style=wx.RA_SPECIFY_ROWS)
-#t1.Bind(wx.EVT_RADIOBOX, togglecubecolor)
+trail_toggle = wx.RadioBox(event_panel, pos=(760,300), size=(160, 60),
+    choices = ['Show trail', 'Hide trail'], style=wx.RA_SPECIFY_ROWS)
+trail_toggle.Bind(wx.EVT_RADIOBOX, toggle_trail)
 
 
 # date menus title
@@ -122,7 +125,7 @@ view_angle = wx.Slider(event_panel, pos=(700,260), size=(300,20),
 view_angle.Bind(wx.EVT_SCROLL, change_view)
 
 # slider for speed adjustment
-#speed_slider = wx.Slider(event_panel, pos=(800,560), size=(100,20), minValue=.1, maxValue=10)
+speed_slider = wx.Slider(event_panel, pos=(700,560), size=(300,20), minValue=.1, maxValue=10)
 #speed_slider.Bind(wx.EVT_SCROLL, update_speed)
 
 ######################## IMPLEMENT 3D ANIMATION #########################
