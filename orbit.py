@@ -56,8 +56,8 @@ def run_simulation(evt):
 def stop_simulation(evt):
     mars.speed = 0
 
-#def update_speed(evt):
-#    adjust_speed = speed_slider.GetValue()
+def update_speed(evt):
+    mars.speed = speed_slider.GetValue()*0.01
 
 ################ CREATE MAIN WINDOW AND DISPLAY WIDGET ################
 
@@ -108,9 +108,11 @@ day_menu.Bind(wx.EVT_CHOICE, choose)
 advance =  wx.Button(event_panel, label='Advance', pos=(800,190))
 advance.Bind(wx.EVT_BUTTON, advance_simulation)
 
+# run simulation button
 run_button = wx.Button(event_panel, label='Run', pos=(725,50))
 run_button.Bind(wx.EVT_BUTTON, run_simulation)
 
+# stop simulation button
 stop_button = wx.Button(event_panel, label='Stop', pos=(860,50))
 stop_button.Bind(wx.EVT_BUTTON, stop_simulation)
 
@@ -124,9 +126,15 @@ view_angle = wx.Slider(event_panel, pos=(700,260), size=(300,20),
     minValue=-7, maxValue=0)
 view_angle.Bind(wx.EVT_SCROLL, change_view)
 
+# speed slider title
+wx.StaticText(event_panel, pos=(700,380), size=(300,30),
+    label='Update simulation speed:',
+    style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
+
 # slider for speed adjustment
-speed_slider = wx.Slider(event_panel, pos=(700,560), size=(300,20), minValue=.1, maxValue=10)
-#speed_slider.Bind(wx.EVT_SCROLL, update_speed)
+speed_slider = wx.Slider(event_panel, pos=(700,400), size=(300,20), minValue=.1,
+    maxValue=10)
+speed_slider.Bind(wx.EVT_SCROLL, update_speed)
 
 ######################## IMPLEMENT 3D ANIMATION #########################
 
