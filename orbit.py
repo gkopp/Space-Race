@@ -37,7 +37,7 @@ def advance_simulation(evt):
 
     #Lists of planets, corresponding spacing, time for orbit
     posfactor = [.24,1.88, .62,1.,11.86,29.46,84.01,164.8]
-    size = [0.3, 2.5, .8, 1.5, 5, 10, 19, 30]
+    size = [1.75, 2.6, 3.75, 4.75, 9, 16, 28.5, 43.75]
     planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
 
     #Aggregate planets, time of orbit, relative spacing
@@ -49,7 +49,6 @@ def advance_simulation(evt):
         new_theta = rot_num*2*pi
         planet.pos = (cos(new_theta)*(sun.radius+planet.radius+size), 
             sin(new_theta)*(sun.radius+planet.radius+size), 0)
-        planet.trail.visible = False
     mars.speed = 0
 
 def run_simulation(evt):
@@ -61,6 +60,9 @@ def stop_simulation(evt):
 def update_speed(evt):
     mars.speed = speed_slider.GetValue()*0.01
 
+def update_zoom(evt):
+    solar_system.range = zoom_slider.GetValue()
+
 ################ CREATE MAIN WINDOW AND DISPLAY WIDGET ################
 
 w = window(title='Solar System',width=1020, height=720,
@@ -68,45 +70,46 @@ w = window(title='Solar System',width=1020, height=720,
 
 solar_system = display(window=w, x=20, y=20, width=650, height=650,
     forward=-vector(0,0,1))
-
+solar_system.autoscale = False
+solar_system.range = 50
 ######################## ADD USER EVENT OBJECTS #######################
 
 event_panel = w.panel
 
 # toggle button for two viewing mode
-trail_toggle = wx.RadioBox(event_panel, pos=(760,300), size=(160, 60),
+trail_toggle = wx.RadioBox(event_panel, pos=(760,430), size=(160, 60),
     choices = ['Show trail', 'Hide trail'], style=wx.RA_SPECIFY_ROWS)
 trail_toggle.Bind(wx.EVT_RADIOBOX, toggle_trail)
 
 # title for checkboxes
-wx.StaticText(event_panel, pos=(700,445), size=(300,30),
+wx.StaticText(event_panel, pos=(700,490), size=(300,30),
     label='Planets included in simulation:',
     style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
 
 # planet check boxes for visibility
-mercury_check = wx.CheckBox(event_panel, pos=(800,450), size=(160, 60),
+mercury_check = wx.CheckBox(event_panel, pos=(800,490), size=(160, 60),
     label = 'Mercury')
 #mercury_check.Bind(wx.EVT_CHECKBOX, toggle_trail)
 
-venus_check = wx.CheckBox(event_panel, pos=(800,470), size=(160, 60),
+venus_check = wx.CheckBox(event_panel, pos=(800,510), size=(160, 60),
     label = 'Venus', style=wx.RA_SPECIFY_ROWS)
 
-earth_check = wx.CheckBox(event_panel, pos=(800,490), size=(160, 60),
+earth_check = wx.CheckBox(event_panel, pos=(800,530), size=(160, 60),
     label = 'Earth', style=wx.RA_SPECIFY_ROWS)
 
-mars_check = wx.CheckBox(event_panel, pos=(800,510), size=(160, 60),
+mars_check = wx.CheckBox(event_panel, pos=(800,550), size=(160, 60),
     label = 'Mars', style=wx.RA_SPECIFY_ROWS)
 
-jupiter_check = wx.CheckBox(event_panel, pos=(800,530), size=(160, 60),
+jupiter_check = wx.CheckBox(event_panel, pos=(800,570), size=(160, 60),
     label = 'Jupiter', style=wx.RA_SPECIFY_ROWS)
 
-saturn_check = wx.CheckBox(event_panel, pos=(800,550), size=(160, 60),
+saturn_check = wx.CheckBox(event_panel, pos=(800,590), size=(160, 60),
     label = 'Saturn', style=wx.RA_SPECIFY_ROWS)
 
-uranus_check = wx.CheckBox(event_panel, pos=(800,570), size=(160, 60),
+uranus_check = wx.CheckBox(event_panel, pos=(800,610), size=(160, 60),
     label = 'Uranus', style=wx.RA_SPECIFY_ROWS)
 
-neptune_check = wx.CheckBox(event_panel, pos=(800,590), size=(160, 60),
+neptune_check = wx.CheckBox(event_panel, pos=(800,630), size=(160, 60),
     label = 'Neptune', style=wx.RA_SPECIFY_ROWS)
 
 # date menus title
@@ -157,6 +160,16 @@ view_angle = wx.Slider(event_panel, pos=(700,260), size=(300,20),
     minValue=-7, maxValue=0)
 view_angle.Bind(wx.EVT_SCROLL, change_view)
 
+# zoom slider title
+wx.StaticText(event_panel, pos=(700,310), size=(300,30),
+    label='Adjust zoom:',
+    style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
+
+# slider for zoom adjustment
+zoom_slider = wx.Slider(event_panel, pos=(700,330), size=(300,20),
+    minValue=5, maxValue=85)
+zoom_slider.Bind(wx.EVT_SCROLL, update_zoom)
+
 # speed slider title
 wx.StaticText(event_panel, pos=(700,380), size=(300,30),
     label='Update simulation speed:',
@@ -171,6 +184,7 @@ speed_slider.Bind(wx.EVT_SCROLL, update_speed)
 
 # Define Sun/Planet attributes
 sun = sphere(pos=(0,0,0), radius=3, color=color.yellow)
+sun.visible = False
 
 # Planets from largest to smallest
 jupiter = sphere(radius=1.5,color=(.847,.620,.570))
@@ -206,8 +220,28 @@ planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
 # initialize trail for each planet
 for planet in planets:
     planet.trail = curve(color = color.white)
+    planet.trail.visible = False
     planet.speed = 0.01
-    planet.make_trail=False
+
+# draw trails
+
+iterations = 0
+for planet in planets:
+    planet.visible = False
+
+while(iterations < 102):
+    rate(100)
+    theta = 0.01*2*pi
+    for planet in planets:
+        planet.pos = rotate(planet.pos, 1*theta)
+        planet.trail.append(pos=planet.pos)
+    iterations = iterations + 1
+
+for planet in planets:
+    planet.visible = True
+    planet.trail.visible = True
+
+sun.visible = True
 
 planets = zip(planets, speeds) # aggregate planet names and speeds
 
@@ -225,6 +259,3 @@ while(1):
     iterations = iterations + 1
     for planet, speed in planets:
         planet.pos = rotate(planet.pos, speed*theta)
-        if iterations*speed*theta < 60 and mars.speed != 0:
-            planet.trail.append(pos=planet.pos)
-
