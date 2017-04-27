@@ -14,10 +14,10 @@ def toggle_trail(evt): # turn trail on or off based on radio button
     planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
     if choice == 0: # top radio button
         for planet in planets:
-            planet.trail.visible = True
+            planet.trail.visible = False
     else: # bottom radio button
         for planet in planets:
-            planet.trail.visible = False
+            planet.trail.visible = True
 
 def change_view(evt): # update the viewing angle based on slider
 
@@ -62,10 +62,6 @@ def advance_simulation(evt): # move planets to configuration at date specified i
     mars.speed = 0            # stop simulation
     speed_slider.SetValue = 0 # update slider
 
-
-def run_simulation(evt): # update token speed value to default to run simulation
-    mars.speed = 0.01 
-
 def stop_simulation(evt): #update token speed value to 0 to stop simulation
     mars.speed = 0
 
@@ -75,24 +71,73 @@ def update_speed(evt):    # update token speed value to current slider value
 def update_zoom(evt):     # set window range to the current slider value
     solar_system.range = zoom_slider.GetValue()
 
+def mercury_visible(evt):
+    if (mercury_check.GetValue() == False):
+        mercury.visible = False
+    else:
+        mercury.visible = True
+
+def venus_visible(evt):
+    if (venus_check.GetValue() == False):
+        venus.visible = False
+    else:
+        venus.visible = True
+
+def earth_visible(evt):
+    if (earth_check.GetValue() == False):
+        earth.visible = False
+    else:
+        earth.visible = True
+
+def mars_visible(evt):
+    if (mars_check.GetValue() == False):
+        mars.visible = False
+    else:
+        mars.visible = True
+
+def jupiter_visible(evt):
+    if (jupiter_check.GetValue() == False):
+        jupiter.visible = False
+    else:
+        jupiter.visible = True
+
+def saturn_visible(evt):
+    if (saturn_check.GetValue() == False):
+        saturn.visible = False
+        saturns_ring.visible = False
+    else:
+        saturn.visible = True
+        saturns_ring.visible = True
+
+def uranus_visible(evt):
+    if (uranus_check.GetValue() == False):
+        uranus.visible = False
+    else:
+        uranus.visible = True 
+
+def neptune_visible(evt):
+    if (neptune_check.GetValue() == False):
+        neptune.visible = False
+    else:
+        neptune.visible = True
+
 ################ CREATE MAIN WINDOW AND DISPLAY WIDGET ################
 
 w = window(title='Solar System',width=1020, height=720,
-    x=0, y=0)
+    x=100, y=0)
 
 solar_system = display(window=w, x=20, y=20, width=650, height=650,
-    forward=-vector(0,0,1))
+    forward=-vector(0,-2,1))
 
 solar_system.autoscale = False
-solar_system.range = 50          # set starting zoom of window 
-
+solar_system.range = 50          # set starting zoom of window
 ######################## ADD USER EVENT OBJECTS #######################
 
 event_panel = w.panel   # holds all of the controls
 
 # toggle button for two viewing mode
 trail_toggle = wx.RadioBox(event_panel, pos=(760,430), size=(160, 60),
-    choices = ['Show trail', 'Hide trail'], style=wx.RA_SPECIFY_ROWS)
+    choices = ['Hide orbital path', 'Show orbital path'], style=wx.RA_SPECIFY_ROWS)
 trail_toggle.Bind(wx.EVT_RADIOBOX, toggle_trail)
 
 # title for checkboxes
@@ -101,30 +146,45 @@ wx.StaticText(event_panel, pos=(700,490), size=(300,30),
     style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
 
 # planet check boxes for visibility
-mercury_check = wx.CheckBox(event_panel, pos=(800,490), size=(160, 60),
-    label = 'Mercury')
-#mercury_check.Bind(wx.EVT_CHECKBOX, toggle_trail)
+mercury_check = wx.CheckBox(event_panel, size=(160, 20),
+    label = 'Mercury', style = wx.ALIGN_RIGHT, pos = (800,510))
+mercury_check.SetValue(True)
+mercury_check.Bind(wx.EVT_CHECKBOX, mercury_visible)
 
-venus_check = wx.CheckBox(event_panel, pos=(800,510), size=(160, 60),
+venus_check = wx.CheckBox(event_panel, pos=(800,530), size=(160, 20),
     label = 'Venus', style=wx.RA_SPECIFY_ROWS)
+venus_check.SetValue(True)
+venus_check.Bind(wx.EVT_CHECKBOX, venus_visible)
 
-earth_check = wx.CheckBox(event_panel, pos=(800,530), size=(160, 60),
+earth_check = wx.CheckBox(event_panel, pos=(800,550), size=(160, 20),
     label = 'Earth', style=wx.RA_SPECIFY_ROWS)
+earth_check.SetValue(True)
+earth_check.Bind(wx.EVT_CHECKBOX, earth_visible)
 
-mars_check = wx.CheckBox(event_panel, pos=(800,550), size=(160, 60),
+mars_check = wx.CheckBox(event_panel, pos=(800,570), size=(160, 20),
     label = 'Mars', style=wx.RA_SPECIFY_ROWS)
+mars_check.SetValue(True)
+mars_check.Bind(wx.EVT_CHECKBOX, mars_visible)
 
-jupiter_check = wx.CheckBox(event_panel, pos=(800,570), size=(160, 60),
+jupiter_check = wx.CheckBox(event_panel, pos=(800,590), size=(160, 20),
     label = 'Jupiter', style=wx.RA_SPECIFY_ROWS)
+jupiter_check.SetValue(True)
+jupiter_check.Bind(wx.EVT_CHECKBOX, jupiter_visible)
 
-saturn_check = wx.CheckBox(event_panel, pos=(800,590), size=(160, 60),
+saturn_check = wx.CheckBox(event_panel, pos=(800,610), size=(160, 20),
     label = 'Saturn', style=wx.RA_SPECIFY_ROWS)
+saturn_check.SetValue(True)
+saturn_check.Bind(wx.EVT_CHECKBOX, saturn_visible)
 
-uranus_check = wx.CheckBox(event_panel, pos=(800,610), size=(160, 60),
+uranus_check = wx.CheckBox(event_panel, pos=(800,630), size=(160, 20),
     label = 'Uranus', style=wx.RA_SPECIFY_ROWS)
+uranus_check.SetValue(True)
+uranus_check.Bind(wx.EVT_CHECKBOX, uranus_visible)
 
-neptune_check = wx.CheckBox(event_panel, pos=(800,630), size=(160, 60),
+neptune_check = wx.CheckBox(event_panel, pos=(800,650), size=(160, 20),
     label = 'Neptune', style=wx.RA_SPECIFY_ROWS)
+neptune_check.SetValue(True)
+neptune_check.Bind(wx.EVT_CHECKBOX, neptune_visible)
 
 # date menus title
 wx.StaticText(event_panel, pos=(690,130), size=(300,30),
@@ -139,7 +199,7 @@ for year in range(1900, 2500):
 year_menu = wx.Choice(event_panel, choices=years, pos=(910,160))
 
 # menu for month
-months = ["      Month", "January", "February", "March", "April", "May", "June",
+months = ["Month", "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"]
 month_menu = wx.Choice(event_panel, choices=months, pos=(690,160))
 
@@ -148,7 +208,7 @@ days = []
 days.append("Day")
 for day in range(1,32):
     days.append(str(day))
-day_menu = wx.Choice(event_panel, choices=days, pos=(812,160))
+day_menu = wx.Choice(event_panel, choices=days, pos=(820,160))
 
 # advance simulation button
 advance =  wx.Button(event_panel, label='Advance', pos=(800,190))
@@ -156,7 +216,7 @@ advance.Bind(wx.EVT_BUTTON, advance_simulation)
 
 # run simulation button
 run_button = wx.Button(event_panel, label='Run', pos=(725,50))
-run_button.Bind(wx.EVT_BUTTON, run_simulation)
+run_button.Bind(wx.EVT_BUTTON, update_speed)
 
 # stop simulation button
 stop_button = wx.Button(event_panel, label='Stop', pos=(860,50))
@@ -169,7 +229,7 @@ wx.StaticText(event_panel, pos=(700,240), size=(300,30),
 
 # slider for view angle
 view_angle = wx.Slider(event_panel, pos=(700,260), size=(300,20),
-    minValue=-7, maxValue=0)
+    minValue=-7, maxValue=0, value = -2)
 view_angle.Bind(wx.EVT_SCROLL, change_view)
 
 # zoom slider title
@@ -179,7 +239,7 @@ wx.StaticText(event_panel, pos=(700,310), size=(300,30),
 
 # slider for zoom adjustment
 zoom_slider = wx.Slider(event_panel, pos=(700,330), size=(300,20),
-    minValue=5, maxValue=85)
+    minValue=5, maxValue=85, value = 50)
 zoom_slider.Bind(wx.EVT_SCROLL, update_zoom)
 
 # speed slider title
@@ -189,13 +249,13 @@ wx.StaticText(event_panel, pos=(700,380), size=(300,30),
 
 # slider for speed adjustment
 speed_slider = wx.Slider(event_panel, pos=(700,400), size=(300,20), minValue=.1,
-    maxValue=10)
+    maxValue=10, value = 1)
 speed_slider.Bind(wx.EVT_SCROLL, update_speed)
 
 ######################## IMPLEMENT 3D ANIMATION #########################
 
 # Define Sun/Planet attributes
-sun = sphere(pos=(0,0,0), radius=3, color=color.yellow)
+sun = sphere(pos=(0,0,0), radius=3, color=color.yellow, material=materials.emissive)
 sun.visible = False
 
 # Planets from largest to smallest
@@ -253,7 +313,6 @@ while(iterations < 102):
     
 for planet in planets:
     planet.visible = True
-    planet.trail.visible = True
 
 sun.visible = True
 saturns_ring.visible = True
