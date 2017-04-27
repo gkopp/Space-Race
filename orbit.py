@@ -58,7 +58,7 @@ def advance_simulation(evt): # move planets to configuration at date specified i
         new_theta = rot_num*2*pi
         planet.pos = (cos(new_theta)*(sun.radius+planet.radius+size), 
             sin(new_theta)*(sun.radius+planet.radius+size), 0)
-
+    saturns_ring.pos = saturn.pos
     mars.speed = 0            # stop simulation
     speed_slider.SetValue = 0 # update slider
 
@@ -204,6 +204,10 @@ jupiter.pos = (sun.radius+jupiter.radius+5, sun.radius+jupiter.radius+5,0)
 
 saturn = sphere(radius = 1.25, color =(.878,.949,.989))
 saturn.pos = (sun.radius+saturn.radius+10,sun.radius+saturn.radius+10,0)
+saturns_ring = ring(axis=(1,1,4), radius=saturn.radius+1, thickness=0.25)
+saturns_ring.pos = (sun.radius+saturn.radius+8,sun.radius+saturn.radius+11.5,0)
+saturns_ring.color = color.cyan
+saturns_ring.visible = False
 
 uranus = sphere(radius = 1, color =(0,.663,1))
 uranus.pos = (sun.radius+19+uranus.radius,sun.radius+uranus.radius+19,0)     
@@ -222,8 +226,6 @@ mars.pos = (sun.radius+mars.radius+2.5,sun.radius+mars.radius+2.5,0)
 
 mercury = sphere(radius=.2, color=(.750,.750,.750))
 mercury.pos = (sun.radius+mercury.radius+0.3,sun.radius+mercury.radius+0.3,0)
-
-
 
 # create lists of planets and corresponding relative speeds
 speeds = [1,.39, .24,.13,.02,.008,.003,.001]
@@ -248,12 +250,13 @@ while(iterations < 102):
         planet.pos = rotate(planet.pos, 1*theta)
         planet.trail.append(pos=planet.pos)
     iterations = iterations + 1
-
+    
 for planet in planets:
     planet.visible = True
     planet.trail.visible = True
 
 sun.visible = True
+saturns_ring.visible = True
 
 # perform animation
 
@@ -265,3 +268,4 @@ while(1):
     iterations = iterations + 1
     for planet, speed in planets:
         planet.pos = rotate(planet.pos, speed*theta)
+    saturns_ring.pos = rotate(saturns_ring.pos, .008*theta)
