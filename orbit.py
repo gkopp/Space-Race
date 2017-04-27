@@ -6,13 +6,10 @@ from visual.controls import *
 import wx
 import math
 
-######################### GLOBAL VARIABLES ###########################
-
-advance = True
-
 ################## FUNCTIONS THAT ARE CALLED ON EVENTS ###############
 
-def toggle_trail(evt): 
+def toggle_trail(evt): # turn trail on or off based on radio button
+
     choice = trail_toggle.GetSelection()
     planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
     if choice == 0: # top radio button
@@ -22,18 +19,30 @@ def toggle_trail(evt):
         for planet in planets:
             planet.trail.visible = False
 
-def change_view(evt):
+def change_view(evt): # update the viewing angle based on slider
+
     y_value = view_angle.GetValue()
     solar_system.forward =-vector(0, y_value ,1)
 
-def advance_simulation(evt):
-    base_yr = 561.
-    day = day_menu.GetSelection()
-    day = day/365
-    month = month_menu.GetSelection() 
-    month = month/12
-    year = year_menu.GetSelection()
-    year = year + 1899 + base_yr + month + day
+def advance_simulation(evt): # move planets to configuration at date specified in menus
+
+    base_yr = 561.     # year where we know the configuration of the planets
+
+    day = day_menu.GetSelection() # get entered day from day menu
+    if day == 0:                  # don't use "Day" menu label as legitimate date
+        return
+    day = day/365                 # convert to fraction of an Earth year
+
+    month = month_menu.GetSelection() # get selected month from month menu
+    if month == 0:                    # don't use "Month" menu label as legitimate date
+        return
+    month = month/12                  # convert to fraction of an Earth year
+
+    year = year_menu.GetSelection()   # get selected year from year menu
+    if year == 0:                     # don't use "Year" menu label as legitimate date
+        return
+
+    year = year + 1899 + base_yr + month + day # total number of years since base year
 
     #Lists of planets, corresponding spacing, time for orbit
     posfactor = [.24,1.88, .62,1.,11.86,29.46,84.01,164.8]
@@ -49,18 +58,21 @@ def advance_simulation(evt):
         new_theta = rot_num*2*pi
         planet.pos = (cos(new_theta)*(sun.radius+planet.radius+size), 
             sin(new_theta)*(sun.radius+planet.radius+size), 0)
-    mars.speed = 0
 
-def run_simulation(evt):
+    mars.speed = 0            # stop simulation
+    speed_slider.SetValue = 0 # update slider
+
+
+def run_simulation(evt): # update token speed value to default to run simulation
     mars.speed = 0.01 
 
-def stop_simulation(evt):
+def stop_simulation(evt): #update token speed value to 0 to stop simulation
     mars.speed = 0
 
-def update_speed(evt):
+def update_speed(evt):    # update token speed value to current slider value
     mars.speed = speed_slider.GetValue()*0.01
 
-def update_zoom(evt):
+def update_zoom(evt):     # set window range to the current slider value
     solar_system.range = zoom_slider.GetValue()
 
 ################ CREATE MAIN WINDOW AND DISPLAY WIDGET ################
@@ -70,11 +82,13 @@ w = window(title='Solar System',width=1020, height=720,
 
 solar_system = display(window=w, x=20, y=20, width=650, height=650,
     forward=-vector(0,0,1))
+
 solar_system.autoscale = False
-solar_system.range = 50
+solar_system.range = 50          # set starting zoom of window 
+
 ######################## ADD USER EVENT OBJECTS #######################
 
-event_panel = w.panel
+event_panel = w.panel   # holds all of the controls
 
 # toggle button for two viewing mode
 trail_toggle = wx.RadioBox(event_panel, pos=(760,430), size=(160, 60),
@@ -122,21 +136,19 @@ years = []
 years.append("Year")
 for year in range(1900, 2500):
     years.append(str(year))
-year_menu = wx.Choice(event_panel, choices=years, pos=(700,160))
+year_menu = wx.Choice(event_panel, choices=years, pos=(910,160))
 
 # menu for month
-months = []
-months.append("Month")
-for month in range(1,13):
-    months.append(str(month))
-month_menu = wx.Choice(event_panel, choices=months, pos=(800,160))
+months = ["      Month", "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"]
+month_menu = wx.Choice(event_panel, choices=months, pos=(690,160))
 
 # menu for day
 days = []
 days.append("Day")
 for day in range(1,32):
     days.append(str(day))
-day_menu = wx.Choice(event_panel, choices=days, pos=(910,160))
+day_menu = wx.Choice(event_panel, choices=days, pos=(812,160))
 
 # advance simulation button
 advance =  wx.Button(event_panel, label='Advance', pos=(800,190))
@@ -243,15 +255,9 @@ for planet in planets:
 
 sun.visible = True
 
-planets = zip(planets, speeds) # aggregate planet names and speeds
-
-dt = 0.01
-
 # perform animation
 
-iterations = 0
-advance = True
-dt = 0.01
+planets = zip(planets, speeds) # aggregate planet names and speeds
 
 while(1):
     rate(100)         # max of 100 frames/second
