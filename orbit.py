@@ -42,6 +42,14 @@ def change_view(evt): # update the viewing angle based on slider
 def advance_simulation(evt): # move planets to configuration at date specified in menus
 
     base_yr = 561.     # year where we know the configuration of the planets
+    
+    # SOURCE: http://curious.astro.cornell.edu/about-us/57-our-solar-system/
+    # planets-and-dwarf-planets/orbits/246-when-was-the-last-time-all-9-planets
+    # -were-aligned-beginner
+
+    # TL;DR: The planets were last aligned on 561 B.C. We arbitrarily put that alignment
+    # at (1,0,0) for simplicity, but the only difference would be angle offset/ where the
+    # x and y axises are defined
 
     day = day_menu.GetSelection() # get entered day from day menu
     if day == 0:                  # don't use "Day" menu label as legitimate date
