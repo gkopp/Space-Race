@@ -86,8 +86,10 @@ def venus_visible(evt):
 def earth_visible(evt):
     if (earth_check.GetValue() == False):
         earth.visible = False
+        e_moon.visible = False
     else:
         earth.visible = True
+        e_moon.visible = True
 
 def mars_visible(evt):
     if (mars_check.GetValue() == False):
@@ -123,7 +125,7 @@ def neptune_visible(evt):
 
 ################ CREATE MAIN WINDOW AND DISPLAY WIDGET ################
 
-w = window(title='Solar System',width=1020, height=720,
+w = window(title='Interactive Solar System Simulation',width=1020, height=720,
     x=100, y=0)
 
 solar_system = display(window=w, x=20, y=20, width=650, height=650,
@@ -135,59 +137,59 @@ solar_system.range = 50          # set starting zoom of window
 
 event_panel = w.panel   # holds all of the controls
 
-# toggle button for two viewing mode
-trail_toggle = wx.RadioBox(event_panel, pos=(760,430), size=(160, 60),
+# toggle for trail visibility
+trail_toggle = wx.RadioBox(event_panel, pos=(760,270), size=(160, 60),
     choices = ['Hide orbital path', 'Show orbital path'], style=wx.RA_SPECIFY_ROWS)
 trail_toggle.Bind(wx.EVT_RADIOBOX, toggle_trail)
 
 # title for checkboxes
-wx.StaticText(event_panel, pos=(700,490), size=(300,30),
+wx.StaticText(event_panel, pos=(690,460), size=(300,30),
     label='Planets included in simulation:',
     style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
 
 # planet check boxes for visibility
 mercury_check = wx.CheckBox(event_panel, size=(160, 20),
-    label = 'Mercury', style = wx.ALIGN_RIGHT, pos = (800,510))
+    label = 'Mercury', style = wx.ALIGN_RIGHT, pos = (800,480))
 mercury_check.SetValue(True)
 mercury_check.Bind(wx.EVT_CHECKBOX, mercury_visible)
 
-venus_check = wx.CheckBox(event_panel, pos=(800,530), size=(160, 20),
+venus_check = wx.CheckBox(event_panel, pos=(800,500), size=(160, 20),
     label = 'Venus', style=wx.RA_SPECIFY_ROWS)
 venus_check.SetValue(True)
 venus_check.Bind(wx.EVT_CHECKBOX, venus_visible)
 
-earth_check = wx.CheckBox(event_panel, pos=(800,550), size=(160, 20),
+earth_check = wx.CheckBox(event_panel, pos=(800,520), size=(160, 20),
     label = 'Earth', style=wx.RA_SPECIFY_ROWS)
 earth_check.SetValue(True)
 earth_check.Bind(wx.EVT_CHECKBOX, earth_visible)
 
-mars_check = wx.CheckBox(event_panel, pos=(800,570), size=(160, 20),
+mars_check = wx.CheckBox(event_panel, pos=(800,540), size=(160, 20),
     label = 'Mars', style=wx.RA_SPECIFY_ROWS)
 mars_check.SetValue(True)
 mars_check.Bind(wx.EVT_CHECKBOX, mars_visible)
 
-jupiter_check = wx.CheckBox(event_panel, pos=(800,590), size=(160, 20),
+jupiter_check = wx.CheckBox(event_panel, pos=(800,560), size=(160, 20),
     label = 'Jupiter', style=wx.RA_SPECIFY_ROWS)
 jupiter_check.SetValue(True)
 jupiter_check.Bind(wx.EVT_CHECKBOX, jupiter_visible)
 
-saturn_check = wx.CheckBox(event_panel, pos=(800,610), size=(160, 20),
+saturn_check = wx.CheckBox(event_panel, pos=(800,580), size=(160, 20),
     label = 'Saturn', style=wx.RA_SPECIFY_ROWS)
 saturn_check.SetValue(True)
 saturn_check.Bind(wx.EVT_CHECKBOX, saturn_visible)
 
-uranus_check = wx.CheckBox(event_panel, pos=(800,630), size=(160, 20),
+uranus_check = wx.CheckBox(event_panel, pos=(800,600), size=(160, 20),
     label = 'Uranus', style=wx.RA_SPECIFY_ROWS)
 uranus_check.SetValue(True)
 uranus_check.Bind(wx.EVT_CHECKBOX, uranus_visible)
 
-neptune_check = wx.CheckBox(event_panel, pos=(800,650), size=(160, 20),
+neptune_check = wx.CheckBox(event_panel, pos=(800,620), size=(160, 20),
     label = 'Neptune', style=wx.RA_SPECIFY_ROWS)
 neptune_check.SetValue(True)
 neptune_check.Bind(wx.EVT_CHECKBOX, neptune_visible)
 
 # date menus title
-wx.StaticText(event_panel, pos=(690,130), size=(300,30),
+wx.StaticText(event_panel, pos=(690,352), size=(300,30),
     label='Advance simulation to specified date:',
     style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
 
@@ -196,22 +198,22 @@ years = []
 years.append("Year")
 for year in range(1900, 2500):
     years.append(str(year))
-year_menu = wx.Choice(event_panel, choices=years, pos=(910,160))
+year_menu = wx.Choice(event_panel, choices=years, pos=(910,380))
 
 # menu for month
 months = ["Month", "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"]
-month_menu = wx.Choice(event_panel, choices=months, pos=(690,160))
+month_menu = wx.Choice(event_panel, choices=months, pos=(690,380))
 
 # menu for day
 days = []
 days.append("Day")
 for day in range(1,32):
     days.append(str(day))
-day_menu = wx.Choice(event_panel, choices=days, pos=(820,160))
+day_menu = wx.Choice(event_panel, choices=days, pos=(820,380))
 
 # advance simulation button
-advance =  wx.Button(event_panel, label='Advance', pos=(800,190))
+advance =  wx.Button(event_panel, label='Advance', pos=(790,410))
 advance.Bind(wx.EVT_BUTTON, advance_simulation)
 
 # run simulation button
@@ -223,32 +225,32 @@ stop_button = wx.Button(event_panel, label='Stop', pos=(860,50))
 stop_button.Bind(wx.EVT_BUTTON, stop_simulation)
 
 # angle update title
-wx.StaticText(event_panel, pos=(700,240), size=(300,30),
-    label='Update rotational viewing angle:',
+wx.StaticText(event_panel, pos=(700,160), size=(300,30),
+    label='Update viewing angle:',
     style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
 
 # slider for view angle
-view_angle = wx.Slider(event_panel, pos=(700,260), size=(300,20),
+view_angle = wx.Slider(event_panel, pos=(700,180), size=(300,20),
     minValue=-7, maxValue=0, value = -2)
 view_angle.Bind(wx.EVT_SCROLL, change_view)
 
 # zoom slider title
-wx.StaticText(event_panel, pos=(700,310), size=(300,30),
+wx.StaticText(event_panel, pos=(700,210), size=(300,30),
     label='Adjust zoom:',
     style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
 
 # slider for zoom adjustment
-zoom_slider = wx.Slider(event_panel, pos=(700,330), size=(300,20),
+zoom_slider = wx.Slider(event_panel, pos=(700,230), size=(300,20),
     minValue=5, maxValue=85, value = 50)
 zoom_slider.Bind(wx.EVT_SCROLL, update_zoom)
 
 # speed slider title
-wx.StaticText(event_panel, pos=(700,380), size=(300,30),
+wx.StaticText(event_panel, pos=(700,105), size=(300,30),
     label='Update simulation speed:',
     style=wx.ALIGN_CENTRE | wx.ST_NO_AUTORESIZE)
 
 # slider for speed adjustment
-speed_slider = wx.Slider(event_panel, pos=(700,400), size=(300,20), minValue=.1,
+speed_slider = wx.Slider(event_panel, pos=(700,130), size=(300,20), minValue=.1,
     maxValue=10, value = 1)
 speed_slider.Bind(wx.EVT_SCROLL, update_speed)
 
@@ -261,6 +263,10 @@ sun.visible = False
 # Planets from largest to smallest
 jupiter = sphere(radius=1.5,color=(.847,.620,.570))
 jupiter.pos = (sun.radius+jupiter.radius+5, sun.radius+jupiter.radius+5,0)
+j_moon_offset = vector(2,0,0)
+j_moon = sphere(radius = .3, color = color.white)
+j_moon.pos = jupiter.pos+j_moon_offset
+j_moon.visible = False
 
 saturn = sphere(radius = 1.25, color =(.878,.949,.989))
 saturn.pos = (sun.radius+saturn.radius+10,sun.radius+saturn.radius+10,0)
@@ -277,6 +283,11 @@ neptune.pos = (sun.radius+neptune.radius+30, sun.radius+neptune.radius+30,0)
 
 earth = sphere(radius=.5, color=(.408,.545,.769))
 earth.pos = (sun.radius+earth.radius+1.5,sun.radius+earth.radius+1.5,0)
+
+moon_offset = vector(0.8,0,0)
+e_moon = sphere(radius = .1, color = color.white)
+e_moon.pos = earth.pos+moon_offset
+e_moon.visible = False
 
 venus = sphere(radius = .4, color=color.red)
 venus.pos = (sun.radius+venus.radius+.8,sun.radius+venus.radius+.8,0)
@@ -316,6 +327,8 @@ for planet in planets:
 
 sun.visible = True
 saturns_ring.visible = True
+e_moon.visible = True
+j_moon.visible = True
 
 # perform animation
 
@@ -328,3 +341,7 @@ while(1):
     for planet, speed in planets:
         planet.pos = rotate(planet.pos, speed*theta)
     saturns_ring.pos = rotate(saturns_ring.pos, .008*theta)
+    moon_offset = rotate(moon_offset, angle=theta, axis = (0,0,1))
+    j_moon_offset = rotate(j_moon_offset, angle=theta*2, axis = (0,0,1))
+    e_moon.pos = earth.pos + moon_offset
+    j_moon.pos = jupiter.pos + j_moon_offset
