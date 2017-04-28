@@ -86,10 +86,8 @@ def venus_visible(evt):
 def earth_visible(evt):
     if (earth_check.GetValue() == False):
         earth.visible = False
-        e_moon.visible = False
     else:
         earth.visible = True
-        e_moon.visible = True
 
 def mars_visible(evt):
     if (mars_check.GetValue() == False):
@@ -263,10 +261,6 @@ sun.visible = False
 # Planets from largest to smallest
 jupiter = sphere(radius=1.5,color=(.847,.620,.570))
 jupiter.pos = (sun.radius+jupiter.radius+5, sun.radius+jupiter.radius+5,0)
-j_moon_offset = vector(2,0,0)
-j_moon = sphere(radius = .3, color = color.white)
-j_moon.pos = jupiter.pos+j_moon_offset
-j_moon.visible = False
 
 saturn = sphere(radius = 1.25, color =(.878,.949,.989))
 saturn.pos = (sun.radius+saturn.radius+10,sun.radius+saturn.radius+10,0)
@@ -283,11 +277,6 @@ neptune.pos = (sun.radius+neptune.radius+30, sun.radius+neptune.radius+30,0)
 
 earth = sphere(radius=.5, color=(.408,.545,.769))
 earth.pos = (sun.radius+earth.radius+1.5,sun.radius+earth.radius+1.5,0)
-
-moon_offset = vector(0.8,0,0)
-e_moon = sphere(radius = .1, color = color.white)
-e_moon.pos = earth.pos+moon_offset
-e_moon.visible = False
 
 venus = sphere(radius = .4, color=color.red)
 venus.pos = (sun.radius+venus.radius+.8,sun.radius+venus.radius+.8,0)
@@ -327,11 +316,8 @@ for planet in planets:
 
 sun.visible = True
 saturns_ring.visible = True
-e_moon.visible = True
-j_moon.visible = True
 
 # perform animation
-
 planets = zip(planets, speeds) # aggregate planet names and speeds
 
 while(1):
@@ -341,7 +327,4 @@ while(1):
     for planet, speed in planets:
         planet.pos = rotate(planet.pos, speed*theta)
     saturns_ring.pos = rotate(saturns_ring.pos, .008*theta)
-    moon_offset = rotate(moon_offset, angle=theta, axis = (0,0,1))
-    j_moon_offset = rotate(j_moon_offset, angle=theta*2, axis = (0,0,1))
-    e_moon.pos = earth.pos + moon_offset
-    j_moon.pos = jupiter.pos + j_moon_offset
+
