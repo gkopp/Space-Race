@@ -1,15 +1,31 @@
 #!/usr/bin/env python
 
+# Grace Kopp, Marya Poterek, and Patricia Portmann
+
+# This program is a graphical user interface for an interactive solar
+# system simulation. Using vpython and the wx widgets library, our GUI
+# demonstrates the planets orbiting the sun with accurate relative sizes,
+# distances from the sun, and speeds. The user can interact with this
+# with sliders that update the zoom, angle of the view, and speed of the
+# simulation. There's also a radio button giving the option to view or 
+# hide the orbital paths, checkboxes allowing the user to choose which
+# planets they want visible, run/stop/exit simulation buttons, and menus
+# that the user can use to selct a month, day, and year, and then advance
+# the simulation to that date.
+
 from __future__ import division, print_function
 from visual import *
 from visual.controls import *
 import wx
 import math
 
-################## FUNCTIONS THAT ARE CALLED ON EVENTS ###############
+################## FUNCTIONS THAT ARE CALLED ON EVENTS ##################
+
+
+def leave(evt): # exit simulation when exit button selected
+    exit()
 
 def toggle_trail(evt): # turn trail on or off based on radio button
-
     choice = trail_toggle.GetSelection()
     planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
     if choice == 0: # top radio button
@@ -20,7 +36,6 @@ def toggle_trail(evt): # turn trail on or off based on radio button
             planet.trail.visible = True
 
 def change_view(evt): # update the viewing angle based on slider
-
     y_value = view_angle.GetValue()
     solar_system.forward =-vector(0, y_value ,1)
 
@@ -60,7 +75,6 @@ def advance_simulation(evt): # move planets to configuration at date specified i
             sin(new_theta)*(sun.radius+planet.radius+size), 0)
     saturns_ring.pos = saturn.pos
     mars.speed = 0            # stop simulation
-    speed_slider.SetValue = 0 # update slider
 
 def stop_simulation(evt): #update token speed value to 0 to stop simulation
     mars.speed = 0
@@ -71,7 +85,11 @@ def update_speed(evt):    # update token speed value to current slider value
 def update_zoom(evt):     # set window range to the current slider value
     solar_system.range = zoom_slider.GetValue()
 
-def mercury_visible(evt):
+# checkbox functions for each of the check boxes that turn on/off the visibility
+# of specified planets (Originally was all in one function but program ran faster
+# with a different event function for each planet checkbox)
+
+def mercury_visible(evt):  
     if (mercury_check.GetValue() == False):
         mercury.visible = False
     else:
@@ -131,6 +149,7 @@ solar_system = display(window=w, x=20, y=20, width=650, height=650,
 
 solar_system.autoscale = False
 solar_system.range = 50          # set starting zoom of window
+
 ######################## ADD USER EVENT OBJECTS #######################
 
 event_panel = w.panel   # holds all of the controls
@@ -215,12 +234,15 @@ advance =  wx.Button(event_panel, label='Advance', pos=(790,410))
 advance.Bind(wx.EVT_BUTTON, advance_simulation)
 
 # run simulation button
-run_button = wx.Button(event_panel, label='Run', pos=(725,50))
+run_button = wx.Button(event_panel, label='Run', pos=(695,50))
 run_button.Bind(wx.EVT_BUTTON, update_speed)
 
 # stop simulation button
-stop_button = wx.Button(event_panel, label='Stop', pos=(860,50))
+stop_button = wx.Button(event_panel, label='Stop', pos=(798,50))
 stop_button.Bind(wx.EVT_BUTTON, stop_simulation)
+
+exit_button = wx.Button(event_panel, label='Exit', pos=(900,50))
+exit_button.Bind(wx.EVT_BUTTON, leave)
 
 # angle update title
 wx.StaticText(event_panel, pos=(700,160), size=(300,30),
@@ -252,7 +274,7 @@ speed_slider = wx.Slider(event_panel, pos=(700,130), size=(300,20), minValue=.1,
     maxValue=10, value = 1)
 speed_slider.Bind(wx.EVT_SCROLL, update_speed)
 
-######################## IMPLEMENT 3D ANIMATION #########################
+########################## INITIALIZE PLANETS #############################
 
 # Define Sun/Planet attributes
 sun = sphere(pos=(0,0,0), radius=3, color=color.yellow, material=materials.emissive)
@@ -287,6 +309,8 @@ mars.pos = (sun.radius+mars.radius+2.5,sun.radius+mars.radius+2.5,0)
 mercury = sphere(radius=.2, color=(.750,.750,.750))
 mercury.pos = (sun.radius+mercury.radius+0.3,sun.radius+mercury.radius+0.3,0)
 
+############################# DRAW TRAILS #################################
+
 # create lists of planets and corresponding relative speeds
 speeds = [1,.39, .24,.13,.02,.008,.003,.001]
 planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
@@ -294,14 +318,14 @@ planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
 # initialize trail for each planet
 for planet in planets:
     planet.trail = curve(color = color.white)
-    planet.trail.visible = False
+    planet.trail.visible = False # keep invisible until full circle drawn
     planet.speed = 0.01
 
 # draw trails
 
 iterations = 0
 for planet in planets:
-    planet.visible = False
+    planet.visible = False # keep invisible until full circle drawn
 
 while(iterations < 102):
     rate(100)
@@ -312,19 +336,20 @@ while(iterations < 102):
     iterations = iterations + 1
     
 for planet in planets:
-    planet.visible = True
+    planet.visible = True # make everything visible once trail loaded
 
 sun.visible = True
 saturns_ring.visible = True
 
-# perform animation
+####################### PERFORM ANIMATION ###########################
+
 planets = zip(planets, speeds) # aggregate planet names and speeds
 
 while(1):
-    rate(100)         # max of 100 frames/second
+    rate(100)  # max of 100 frames/second
     theta = mars.speed*2*pi
     iterations = iterations + 1
     for planet, speed in planets:
-        planet.pos = rotate(planet.pos, speed*theta)
-    saturns_ring.pos = rotate(saturns_ring.pos, .008*theta)
+        planet.pos = rotate(planet.pos, speed*theta) # update each planet position
+    saturns_ring.pos = rotate(saturns_ring.pos, .008*theta) # update saturns ring position
 
