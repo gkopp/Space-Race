@@ -18,7 +18,7 @@ from visual import *
 from visual.controls import *
 import wx
 import math
-
+import sys
 ################## FUNCTIONS THAT ARE CALLED ON EVENTS ##################
 
 
@@ -67,25 +67,29 @@ def advance_simulation(evt): # move planets to configuration at date specified i
 
     year = m_year + 1899 + base_yr + month + day # total number of years since base year
 
-    print("\nPlanet postions on : ", m_month, "/" , m_day, "/", m_year + 1899)
-    print("____________________________________")
-    #Lists of planets, corresponding spacing, time for orbit
-    posfactor = [.24,1.88, .62,1.,11.86,29.46,84.01,164.8]
-    size = [1.75, 2.6, 3.75, 4.75, 9, 16, 28.5, 43.75]
-    planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
-    planet_names = ['mercury','mars','venus','earth','jupiter','saturn','uranus','neptune']
-    #Aggregate planets, time of orbit, relative spacing
-    planets = zip(planets, posfactor, size, planet_names)
+    with open('planet_pos.txt', 'a') as fs:
+        fs.write("\nPlanet postions on : " +  str(m_month) + "/" + str(m_day) + "/" + 
+            str(m_year + 1899) + "\n")
+        fs.write("____________________________________\n")
 
-    #Passes through list, determines position, and displays each planet
-    for planet, posfactor, size, p_name in planets:
-        rot_num = year/posfactor
-        new_theta = rot_num*2*pi
-        planet.pos = (cos(new_theta)*(sun.radius+planet.radius+size), 
-            sin(new_theta)*(sun.radius+planet.radius+size), 0)
-        print(p_name, ": ", planet.pos)
-    saturns_ring.pos = saturn.pos
-    mars.speed = 0            # stop simulation
+        #Lists of planets, corresponding spacing, time for orbit
+        posfactor = [.24,1.88, .62,1.,11.86,29.46,84.01,164.8]
+        size = [1.75, 2.6, 3.75, 4.75, 9, 16, 28.5, 43.75]
+        planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
+        planet_names = ['mercury','mars','venus','earth','jupiter','saturn','uranus','neptune']
+
+        #Aggregate planets, time of orbit, relative spacing
+        planets = zip(planets, posfactor, size, planet_names)
+
+        #Passes through list, determines position, and displays each planet
+        for planet, posfactor, size, p_name in planets:
+            rot_num = year/posfactor
+            new_theta = rot_num*2*pi
+            planet.pos = (cos(new_theta)*(sun.radius+planet.radius+size), 
+                sin(new_theta)*(sun.radius+planet.radius+size), 0)
+            fs.write(p_name + ": " + str(planet.pos)+ "\n")
+        saturns_ring.pos = saturn.pos
+        mars.speed = 0            # stop simulation
 
 def stop_simulation(evt): #update token speed value to 0 to stop simulation
     mars.speed = 0
@@ -353,6 +357,9 @@ sun.visible = True
 saturns_ring.visible = True
 
 ####################### PERFORM ANIMATION ###########################
+
+with open('planet_pos.txt', 'w') as fs:
+    fs.write("RESULTS OF SIMULATION RUN: \n\n")
 
 planets = zip(planets, speeds) # aggregate planet names and speeds
 
