@@ -6,10 +6,13 @@
 
 import math
 
-def central_angle(x , y):
+# Given a x and y coordinate, program returns number of revolution number that corresponds to that
+# point (where once around the unit circle is one revolution)
 
-    update_angle = 0
-     
+def central_angle(x , y):
+    x = float(x)
+    y = float(y)
+   
     if x > 0 and y >= 0:             # 1st quadrant
         update_angle = 0        
 
@@ -22,57 +25,65 @@ def central_angle(x , y):
     if x >= 0 and y < 0:             # 4th quadrant
         update_angle = 3*math.pi/2
 
-    x = math.fabs(float(x))
-    y = math.fabs(float(y))
+    # take absolute value of numbers
+    x = math.fabs(x)
+    y = math.fabs(y)
 
     if (y == 0 or x == 0):
-        angle = update_angle
+        angle = update_angle # avoids dividing by 0
     else:
-        angle = math.atan(x/y) + update_angle
-     
+        angle = math.atan(x/y) + update_angle 
+    
     return angle/(2*math.pi)
 
-data = []
-dates = []
 
-planet_names = ['mercury','mars','venus','earth','jupiter','saturn','uranus','neptune']
+
+data = [] # stores the revolution number corresponsing to each planets position
+dates = [] # stores the dates positions were recorded on in the text file
 
 # source: http://space-facts.com/orbital-periods-planets/
+# the number of revolutions each planet makes while earth makes one
 revolutions_per_year = [.24, 1.88, .62, 1., 11.86, 29.46, 84.01, 164.8] 
 
-# Parse file into list of tuples with x and y coordinates
-with open("planet_pos.txt", 'r') as fs:
+# Parse file into appropriate lists
+with open("planet_pos.txt", 'r') as fs: # open text file containing planet position information
+
     for line in fs:
         line =  line.strip().split()
  
+        # Parse out date and convert day/month/year into a year value that accounts for days/months
         if line and line[0] == 'Planet': 
         	  date = line[4].split('/')
         	  year = float(date[0])/12 + float(date[1])/365 + float(date[2])
-        	  dates.append(year)
+        	  dates.append(year) # add to list holding the year values for each data sample
 
-        elif line and line[0] != 'Planet' and line[0] != 'RESULTS':
+        # Parse out x and y positions for each planet
+        elif line and line[0] != 'Planet' and line[0] != 'RESULTS': # filter out headings
             if line[0] != '____________________________________':
                 x = line[1][1:-1]
                 y = line[2][:-1]
-                angle = central_angle(x, y)
-                data.append(angle)
+                angle = central_angle(x, y) # call function to convert x and y to # of revolutions
+                data.append(angle) # add each revolution angle to a list
 
-print dates
-trials = []
+base_trial = [] # stores the position (in revs) of the first set of planet positions in the file
+base_trial = data[0:8]
 
-for i in xrange(0,len(data),8):
-	 temp_list = data[i:i+8]
-	 trials.append(temp_list)
+update_trial = [] # stores the position (in revs) of the second set of planet positions in the file
+update_trial = data[8:18]
 
-for i in xrange(1,len(trials)):
-	  earth_years = dates[i] - dates[0]
-	  info = zip(revolutions_per_year, trials[0],trials[i])
-	  for rev_frac, base_angle, curr_angle in info:
-	  	  calculated_new_angle = (base_angle + rev_frac*earth_years*2*math.pi) % 1 
-	  	  print calculated_new_angle
-	  	  print curr_angle
-	  print earth_years
+elapsed_time = dates[1] - dates[0] # time (in years) between data sets
 
-#print trials[0]
-#print trials[1]
+calculated_position = []
+for i in range(0,8):
+    calculated_position.append((base_trial[i] + elapsed_time/revolutions_per_year[i])%1)
 
+planet_names = ['mercury','mars','venus','earth','jupiter','saturn','uranus','neptune']
+
+for i in range(0,8):
+    print "Testing " + planet_names[i] + "..."
+    if update_trial[i] >= calculated_position[i] - .2 and update_trial[i] <= (calculated_position[i] + .2)%1:
+       continue
+    else:
+       print planet_names[i] + " test failed!"
+       print update_trial[i] 
+       print calculated_position[i]
