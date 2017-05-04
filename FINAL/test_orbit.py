@@ -54,6 +54,7 @@ def central_angle(x , y):
 pos_data = [] # stores the x and y values of each planet at every date tested
 dates = [] # stores the dates positions were recorded on in the text file
 
+planet_num = 0
 # Parse file into appropriate lists
 with open("planet_pos.txt", 'r') as fs: # open text file containing planet position information
 
@@ -79,6 +80,9 @@ with open("planet_pos.txt", 'r') as fs: # open text file containing planet posit
                 x = float(line[1][1:-1])
                 y = float(line[2][:-1])
                 pos_data.append((x,y)) # add each revolution angle to a list
+                planet_num = planet_num + 1
+                if planet_num == 8:
+                    break
 
 if len(pos_data) == 0: # List would only be empty if there was no position data in text file 
                        # meaning the user didn't previously run orbit.py with the advance feature
