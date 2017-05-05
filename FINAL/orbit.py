@@ -2,7 +2,7 @@
 
 # Grace Kopp, Marya Poterek, and Patricia Portmann
 
-# This program is a graphical user interface for an interactive solar
+# This program is a graphical user interface for a 3D interactive solar
 # system simulation. Using vpython and the wx widgets library, our GUI
 # demonstrates the planets orbiting the sun with accurate relative sizes,
 # distances from the sun, and speeds. The user can interact with this
@@ -19,8 +19,8 @@ from visual.controls import *
 import wx
 import math
 import sys
-################## FUNCTIONS THAT ARE CALLED ON EVENTS ##################
 
+################## FUNCTIONS THAT ARE CALLED ON EVENTS ##################
 
 def leave(evt): # exit simulation when exit button selected
     exit()
@@ -67,27 +67,30 @@ def advance_simulation(evt): # move planets to configuration at date specified i
 
     year = m_year + 1899 + base_yr + month + day # total number of years since base year
 
+    # write results of position updates to file to verify correct positions in testing program
     with open('planet_pos.txt', 'a') as fs:
         fs.write("\nPlanet postions on : " +  str(m_month) + "/" + str(m_day) + "/" + 
             str(m_year + 1899) + "\n")
         fs.write("____________________________________\n")
 
         #Lists of planets, corresponding spacing, time for orbit
-        posfactor = [.24,1.88, .62,1.,11.86,29.46,84.01,164.8]
+        posfactor = [.24,1.88, .62,1.,11.86,29.46,84.01,164.8] # revolution period for each planet
         size = [1.75, 2.6, 3.75, 4.75, 9, 16, 28.5, 43.75]
         planets = [mercury,mars,venus,earth,jupiter,saturn,uranus,neptune]
         planet_names = ['mercury','mars','venus','earth','jupiter','saturn','uranus','neptune']
 
-        #Aggregate planets, time of orbit, relative spacing
+        #Aggregate planets, time of orbit, relative spacing, names so all can be used in one for loop
         planets = zip(planets, posfactor, size, planet_names)
 
         #Passes through list, determines position, and displays each planet
         for planet, posfactor, size, p_name in planets:
-            rot_num = year/posfactor
-            new_theta = rot_num*2*pi
-            planet.pos = (cos(new_theta)*(sun.radius+planet.radius+size), 
-                sin(new_theta)*(sun.radius+planet.radius+size), 0)
-            fs.write(p_name + ": " + str(planet.pos)+ "\n")
+            rot_num = year/posfactor # find number of rotations possible in time span
+            new_theta = rot_num*2*pi # convert to radians
+
+            planet.pos = (math.cos(new_theta)*(sun.radius+planet.radius+size), # convert to x and y coordinates
+                math.sin(new_theta)*(sun.radius+planet.radius+size), 0)
+
+            fs.write(p_name + ": " + str(planet.pos)+ "\n") # write position to text file for later testing
         saturns_ring.pos = saturn.pos
         mars.speed = 0            # stop simulation
 
@@ -102,7 +105,8 @@ def update_zoom(evt):     # set window range to the current slider value
 
 # checkbox functions for each of the check boxes that turn on/off the visibility
 # of specified planets (Originally was all in one function but program ran faster
-# with a different event function for each planet checkbox)
+# with a different event function for each planet checkbox... not pretty, but it
+# works better))
 
 def mercury_visible(evt):  
     if (mercury_check.GetValue() == False):
@@ -172,7 +176,7 @@ event_panel = w.panel   # holds all of the controls
 # toggle for trail visibility
 trail_toggle = wx.RadioBox(event_panel, pos=(760,270), size=(160, 60),
     choices = ['Hide orbital path', 'Show orbital path'], style=wx.RA_SPECIFY_ROWS)
-trail_toggle.Bind(wx.EVT_RADIOBOX, toggle_trail)
+trail_toggle.Bind(wx.EVT_RADIOBOX, toggle_trail) # links toggle events to toggle_trail function
 
 # title for checkboxes
 wx.StaticText(event_panel, pos=(690,460), size=(300,30),
@@ -183,42 +187,42 @@ wx.StaticText(event_panel, pos=(690,460), size=(300,30),
 mercury_check = wx.CheckBox(event_panel, size=(160, 20),
     label = 'Mercury', style = wx.ALIGN_RIGHT, pos = (800,480))
 mercury_check.SetValue(True)
-mercury_check.Bind(wx.EVT_CHECKBOX, mercury_visible)
+mercury_check.Bind(wx.EVT_CHECKBOX, mercury_visible) # links checkbox events to corresponding planet visibility  function
 
 venus_check = wx.CheckBox(event_panel, pos=(800,500), size=(160, 20),
     label = 'Venus', style=wx.RA_SPECIFY_ROWS)
 venus_check.SetValue(True)
-venus_check.Bind(wx.EVT_CHECKBOX, venus_visible)
+venus_check.Bind(wx.EVT_CHECKBOX, venus_visible) # links checkbox events to corresponding planet visibility  function
 
 earth_check = wx.CheckBox(event_panel, pos=(800,520), size=(160, 20),
     label = 'Earth', style=wx.RA_SPECIFY_ROWS)
 earth_check.SetValue(True)
-earth_check.Bind(wx.EVT_CHECKBOX, earth_visible)
+earth_check.Bind(wx.EVT_CHECKBOX, earth_visible) # links checkbox events to corresponding planet visibility  function
 
 mars_check = wx.CheckBox(event_panel, pos=(800,540), size=(160, 20),
     label = 'Mars', style=wx.RA_SPECIFY_ROWS)
 mars_check.SetValue(True)
-mars_check.Bind(wx.EVT_CHECKBOX, mars_visible)
+mars_check.Bind(wx.EVT_CHECKBOX, mars_visible) # links checkbox events to corresponding planet visibility  function
 
 jupiter_check = wx.CheckBox(event_panel, pos=(800,560), size=(160, 20),
     label = 'Jupiter', style=wx.RA_SPECIFY_ROWS)
 jupiter_check.SetValue(True)
-jupiter_check.Bind(wx.EVT_CHECKBOX, jupiter_visible)
+jupiter_check.Bind(wx.EVT_CHECKBOX, jupiter_visible) # links checkbox events to corresponding planet visibility  function
 
 saturn_check = wx.CheckBox(event_panel, pos=(800,580), size=(160, 20),
     label = 'Saturn', style=wx.RA_SPECIFY_ROWS)
 saturn_check.SetValue(True)
-saturn_check.Bind(wx.EVT_CHECKBOX, saturn_visible)
+saturn_check.Bind(wx.EVT_CHECKBOX, saturn_visible) # links checkbox events to corresponding planet visibility  function
 
 uranus_check = wx.CheckBox(event_panel, pos=(800,600), size=(160, 20),
     label = 'Uranus', style=wx.RA_SPECIFY_ROWS)
 uranus_check.SetValue(True)
-uranus_check.Bind(wx.EVT_CHECKBOX, uranus_visible)
+uranus_check.Bind(wx.EVT_CHECKBOX, uranus_visible) # links checkbox events to corresponding planet visibility  function
 
 neptune_check = wx.CheckBox(event_panel, pos=(800,620), size=(160, 20),
     label = 'Neptune', style=wx.RA_SPECIFY_ROWS)
 neptune_check.SetValue(True)
-neptune_check.Bind(wx.EVT_CHECKBOX, neptune_visible)
+neptune_check.Bind(wx.EVT_CHECKBOX, neptune_visible) # links checkbox events to corresponding planet visibility  function
 
 # date menus title
 wx.StaticText(event_panel, pos=(690,352), size=(300,30),
@@ -246,18 +250,18 @@ day_menu = wx.Choice(event_panel, choices=days, pos=(820,380))
 
 # advance simulation button
 advance =  wx.Button(event_panel, label='Advance', pos=(790,410))
-advance.Bind(wx.EVT_BUTTON, advance_simulation)
+advance.Bind(wx.EVT_BUTTON, advance_simulation) # links advance button with advance_simulation function
 
 # run simulation button
 run_button = wx.Button(event_panel, label='Run', pos=(695,50))
-run_button.Bind(wx.EVT_BUTTON, update_speed)
+run_button.Bind(wx.EVT_BUTTON, update_speed) # links run button with update_speed function
 
 # stop simulation button
 stop_button = wx.Button(event_panel, label='Stop', pos=(798,50))
-stop_button.Bind(wx.EVT_BUTTON, stop_simulation)
+stop_button.Bind(wx.EVT_BUTTON, stop_simulation) # links stop button with stop_simulation function
 
 exit_button = wx.Button(event_panel, label='Exit', pos=(900,50))
-exit_button.Bind(wx.EVT_BUTTON, leave)
+exit_button.Bind(wx.EVT_BUTTON, leave) #links exit button with leave function
 
 # angle update title
 wx.StaticText(event_panel, pos=(700,160), size=(300,30),
@@ -267,7 +271,7 @@ wx.StaticText(event_panel, pos=(700,160), size=(300,30),
 # slider for view angle
 view_angle = wx.Slider(event_panel, pos=(700,180), size=(300,20),
     minValue=-7, maxValue=0, value = -2)
-view_angle.Bind(wx.EVT_SCROLL, change_view)
+view_angle.Bind(wx.EVT_SCROLL, change_view) # links angle slider to change_view function
 
 # zoom slider title
 wx.StaticText(event_panel, pos=(700,210), size=(300,30),
@@ -277,7 +281,7 @@ wx.StaticText(event_panel, pos=(700,210), size=(300,30),
 # slider for zoom adjustment
 zoom_slider = wx.Slider(event_panel, pos=(700,230), size=(300,20),
     minValue=5, maxValue=85, value = 50)
-zoom_slider.Bind(wx.EVT_SCROLL, update_zoom)
+zoom_slider.Bind(wx.EVT_SCROLL, update_zoom) # links zoom slider to update_zoom function
 
 # speed slider title
 wx.StaticText(event_panel, pos=(700,105), size=(300,30),
@@ -287,15 +291,18 @@ wx.StaticText(event_panel, pos=(700,105), size=(300,30),
 # slider for speed adjustment
 speed_slider = wx.Slider(event_panel, pos=(700,130), size=(300,20), minValue=.1,
     maxValue=10, value = 1)
-speed_slider.Bind(wx.EVT_SCROLL, update_speed)
+speed_slider.Bind(wx.EVT_SCROLL, update_speed) # links speed slider to update_speed function
 
 ########################## INITIALIZE PLANETS #############################
 
 # Define Sun/Planet attributes
 sun = sphere(pos=(0,0,0), radius=3, color=color.yellow, material=materials.emissive)
-sun.visible = False
+sun.visible = False # keep invisible until everything is loaded
 
 # Planets from largest to smallest
+# (The distances of planets relative to eachother are accurate as are as the sizes of the planets
+# relative to eachother and the speeds of the planets relative to eachother)
+
 jupiter = sphere(radius=1.5,color=(.847,.620,.570))
 jupiter.pos = (sun.radius+jupiter.radius+5, sun.radius+jupiter.radius+5,0)
 
@@ -342,12 +349,12 @@ iterations = 0
 for planet in planets:
     planet.visible = False # keep invisible until full circle drawn
 
-while(iterations < 102):
+while(iterations < 102): # cap iterations to avoid orbit drawing forever in circle
     rate(100)
-    theta = 0.01*2*pi
+    theta = 0.01*2*pi # update rotation angle
     for planet in planets:
-        planet.pos = rotate(planet.pos, 1*theta)
-        planet.trail.append(pos=planet.pos)
+        planet.pos = rotate(planet.pos, 1*theta) # rotate planets
+        planet.trail.append(pos=planet.pos) # append trail
     iterations = iterations + 1
     
 for planet in planets:
@@ -358,14 +365,18 @@ saturns_ring.visible = True
 
 ####################### PERFORM ANIMATION ###########################
 
-with open('planet_pos.txt', 'w') as fs:
-    fs.write("RESULTS OF SIMULATION RUN: \n\n")
+# opening this file as writeable and then loading the simulation data as appendable
+# allows the file to be cleared between instances of running the program, but still 
+# aggregate data within one instane of running
+
+with open('planet_pos.txt', 'w') as fs: 
+    fs.write("RESULTS OF SIMULATION RUN: \n\n") 
 
 planets = zip(planets, speeds) # aggregate planet names and speeds
 
 while(1):
     rate(100)  # max of 100 frames/second
-    theta = mars.speed*2*pi
+    theta = mars.speed*2*pi # rotation angle
     iterations = iterations + 1
     for planet, speed in planets:
         planet.pos = rotate(planet.pos, speed*theta) # update each planet position
